@@ -1379,9 +1379,15 @@ def generate_pdf(qrs, dpi, page_w_points, page_h_points, page_instructions, cove
     qr_min_padded_height = max(qr_h_pixel, qr_raw_h_pixel+qr_padding)
     qr_v_padding = qr_min_padded_height - qr_h_pixel
 
+    # Add padding qr copies to fillup last page
+    last_page_padding_qrs  = min(num_qr_pages * qr_per_page - len(qrs), len(qrs))
+    logging.info(f"Add {last_page_padding_qrs} random qr copies to fillup last page")
+    total_qrs = len(qrs) + last_page_padding_qrs
+    labeled += shuffle(labeled[:last_page_padding_qrs])
+
     # Combine rows, adding horizontal padding
     rows = []
-    for row_start in range(0, len(qrs), page_w_qr):
+    for row_start in range(0, total_qrs, page_w_qr):
         row_qrs = labeled[row_start:row_start+page_w_qr]
         rows.append(h_merge(row_qrs, padding=qr_padding))
 
